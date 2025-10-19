@@ -79,7 +79,7 @@ def get_user_booking(email):
         return jsonify(booking.to_dict()),200
     return jsonify(None),200
 
-@app.route('/api/book',methids=['POST']) 
+@app.route('/api/book',methods=['POST']) 
 def book_room():
     """Create a new booking"""
     data=request.json 
@@ -99,7 +99,7 @@ def book_room():
         return jsonify({'success':False, 'message':'This slot is already booked'})
     
     #Create booking 
-    new_booking=Booking(email=email, room=room, dtae=date, time=time)
+    new_booking=Booking(email=email, room=room, date=date, time=time)
     db.session.add(new_booking)
     db.session.commit()
 
@@ -134,7 +134,7 @@ def admin_get_students():
     students=Student.query.all()
     return jsonify([{'id':s.id, 'email':s.email}for s in students]),200
 
-@app.route('/api/admin/add-student',methods=['GET'])
+@app.route('/api/admin/add-student',methods=['POST'])
 def admin_add_student_api():
     """Add a new approved student"""
     data=request.json
