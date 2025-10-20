@@ -5,40 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Room Booking</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box;}
-        body { font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background:#dadfe8;}
-        .min-h-screen { min-height:100vh;}
-        .container {max-width:1200px; margin:0 auto;padding:0 24px;}
-        button {cursor:pointer; border:none; font-size:14px; transition:all 0.2s;}
-        button:disabled{ opacity:0.5; cursor:not-allowed;}
-        input,select {font-size:14px;}
-
-        /* Login Page*/
-        .login-page {display:flex; align-items:center; justify-content: center; min-height:100vh; background:linear-gradient(to bottom right, #eff6ff, #e0e7ff);}
-        .login-card {background:white; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.1); padding:32px; width:100%; max-width: 448px;}
-        .login-card h1 {font-size:28px; font-weight:bold; color:#1f2937; margin-bottom: 8px;}
-        .login-card p {color:#4b5563; margin-bottom:32px;}
-        .form-group {margin-bottom:16px;}
-        .form-group label {display:block; color:#374151;font-weight: 600; margin-bottom: 8px;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f3f4f6; }
+        .min-h-screen { min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        button { cursor: pointer; border: none; font-size: 14px; transition: all 0.2s; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        input, select { font-size: 14px; }
+        
+        /* Login Page */
+        .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(to bottom right, #eff6ff, #e0e7ff); }
+        .login-card { background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 32px; width: 100%; max-width: 448px; }
+        .login-card h1 { font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 8px; }
+        .login-card p { color: #4b5563; margin-bottom: 32px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #374151; font-weight: 600; margin-bottom: 8px; }
         .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
-        .form-group input:focus {outline:none; ring:2px solid #4f46e5; box-shadow:0 0 0 3px rgba(79,70,229,0.1);}
-        .btn-primary {width:100%; background:#4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
-        .btn-primary:hover:not(:disabled) {background:#4338ca;}
+        .form-group input:focus { outline: none; ring: 2px solid #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .btn-primary { width: 100%; background: #4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
+        .btn-primary:hover:not(:disabled) { background: #4338ca; }
         .error { color: #dc2626; font-size: 12px; margin-top: 8px; }
-        .hidden {display:none}
-
-        /*Dashboard*/
-        .nav {background:white; box-shadow:0 1px rgba(0,0,0,0.1);}
-        .nav-content{max-width:1200 px; margin:0 auto;padding:16px 24px; display:flex; justify-content:space-between;align-items:center;}
+        .hidden { display: none; }
+        
+        /* Dashboard */
+        .nav { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nav-content { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
         .nav h1 { font-size: 24px; font-weight: bold; color: #4f46e5; }
         .btn-logout { display: flex; align-items: center; gap: 8px; color: #4b5563; }
         .btn-logout:hover { color: #dc2626; }
-
+        
         .dashboard-page { padding: 32px 24px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
-
-        card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .card h2 { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 16px; }
         
         .booking-card { background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 24px; }
@@ -93,18 +93,20 @@
 </head>
 <body>
 
+<!-- Login Page -->
 <div id="loginPage" class="login-page">
-    <div class="'login-card">
+    <div class="login-card">
         <h1>Study Room Booking</h1>
-        <p>Kilachand Honors College</p>
-        <div class="'form-group">
-            <input type="'email" id="emailInput" placeholder="Enter your BU email">
+        <p>Honour College Only</p>
+        <div class="form-group">
+            <input type="email" id="emailInput" placeholder="Enter your college email">
         </div>
         <button class="btn-primary" onclick="handleLogin()">Login</button>
         <div class="error" id="loginError"></div>
     </div>
 </div>
 
+<!-- Dashboard -->
 <div id="dashboardPage" class="hidden">
     <div class="nav">
         <div class="nav-content">
@@ -130,6 +132,7 @@
     </div>
 </div>
 
+<!-- Select Room -->
 <div id="selectRoomPage" class="hidden">
     <div class="nav">
         <div class="nav-content">
@@ -142,6 +145,7 @@
     </div>
 </div>
 
+<!-- Date & Time -->
 <div id="dateTimePage" class="hidden">
     <div class="nav">
         <div class="nav-content">
@@ -175,6 +179,7 @@
     </div>
 </div>
 
+<!-- Confirmation -->
 <div id="confirmationPage" class="hidden">
     <div class="confirmation-page">
         <div class="confirmation-card">
@@ -191,7 +196,9 @@
 </div>
 
 <script>
-    const API_URL = 'http://localhost:5000';
+    const API_URL = window.location.hostname === 'localhost'
+      ? 'http://localhost:5000'
+      : 'https://your-app.onrender.com';
     let currentUser = '';
     let selectedRoom = null;
     let activeBooking = null;
@@ -204,43 +211,44 @@
         { id: 2, name: '911', capacity: '1-4 people' },
         { id: 3, name: '912', capacity: '1-8 people' },
     ];
-
+    
     const timeSlots = ['08:00 - 09:00', '08:00 - 10:00', '09:00 - 10:00', '09:00 - 11:00', '10:00 - 11:00', '10:00 - 12:00', '11:00 - 12:00', '11:00 - 13:00', '12:00 - 13:00', '12:00 - 14:00', '13:00 - 14:00', '13:00 - 15:00', '14:00 - 15:00', '14:00 - 16:00', '15:00 - 16:00', '15:00 - 17:00', '16:00 - 17:00', '16:00 - 18:00', '17:00 - 18:00', '17:00 - 19:00', '18:00 - 19:00', '18:00 - 20:00', '19:00 - 20:00', '20:00 - 21:00'];
-
+    
+    // Page Navigation
     function showPage(pageId) {
         document.querySelectorAll('[id$="Page"]').forEach(el => el.classList.add('hidden'));
         document.getElementById(pageId).classList.remove('hidden');
     }
-
+    
     function goToDashboard() {
         fetchUserBooking();
         showPage('dashboardPage');
     }
-
+    
     function goToSelectRoom() {
         showPage('selectRoomPage');
         renderRooms();
     }
     
-    //API Calls 
-    async function handleLogin(){
-        const email= document.getElementById('emailInput').value;
-        const errorDiv= document.getElementById('loginError');
-        errorDiv.textContent='';
-
-        if (!email){
-            errorDiv.textContent='Please enter an email';
+    // API Calls
+    async function handleLogin() {
+        const email = document.getElementById('emailInput').value;
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = '';
+        
+        if (!email) {
+            errorDiv.textContent = 'Please enter an email';
             return;
         }
-
-        try{
-            const res=await fetch(`${API_URL}/api/login`,{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({email})
+        
+        try {
+            const res = await fetch(`${API_URL}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
             });
-            const data=await res.json();
-
+            const data = await res.json();
+            
             if (data.success) {
                 currentUser = email;
                 fetchDateRange();
@@ -253,7 +261,7 @@
             errorDiv.textContent = 'Connection error. Make sure Flask is running.';
         }
     }
-
+    
     async function fetchDateRange() {
         try {
             const res = await fetch(`${API_URL}/api/date-range`);
@@ -266,7 +274,7 @@
             console.error('Error fetching date range:', err);
         }
     }
-
+    
     async function fetchUserBooking() {
         try {
             const res = await fetch(`${API_URL}/api/user-booking/${currentUser}`);
@@ -294,6 +302,7 @@
             console.error('Error fetching booked slots:', err);
         }
     }
+    
     async function handleConfirmBooking() {
         const date = document.getElementById('dateInput').value;
         const time = document.getElementById('timeSelect').value;
@@ -416,12 +425,6 @@
         if (e.key === 'Enter') handleLogin();
     });
 </script>
+
 </body>
 </html>
-
-
-
-     
-
-
-
