@@ -1,1 +1,430 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Room Booking</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f3f4f6; }
+        .min-h-screen { min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        button { cursor: pointer; border: none; font-size: 14px; transition: all 0.2s; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        input, select { font-size: 14px; }
+        
+        /* Login Page */
+        .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(to bottom right, #eff6ff, #e0e7ff); }
+        .login-card { background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 32px; width: 100%; max-width: 448px; }
+        .login-card h1 { font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 8px; }
+        .login-card p { color: #4b5563; margin-bottom: 32px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; color: #374151; font-weight: 600; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+        .form-group input:focus { outline: none; ring: 2px solid #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .btn-primary { width: 100%; background: #4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
+        .btn-primary:hover:not(:disabled) { background: #4338ca; }
+        .error { color: #dc2626; font-size: 12px; margin-top: 8px; }
+        .hidden { display: none; }
+        
+        /* Dashboard */
+        .nav { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nav-content { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .nav h1 { font-size: 24px; font-weight: bold; color: #4f46e5; }
+        .btn-logout { display: flex; align-items: center; gap: 8px; color: #4b5563; }
+        .btn-logout:hover { color: #dc2626; }
+        
+        .dashboard-page { padding: 32px 24px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h2 { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 16px; }
+        
+        .booking-card { background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 24px; }
+        .booking-card p { color: #1f2937; margin-bottom: 8px; }
+        .btn-cancel { background: #ef4444; color: white; padding: 8px 16px; border-radius: 6px; margin-top: 16px; }
+        .btn-cancel:hover:not(:disabled) { background: #dc2626; }
+        
+        .empty-booking { background: #f3f4f6; border-radius: 8px; padding: 24px; text-align: center; }
+        .empty-booking p { color: #4b5563; margin-bottom: 16px; }
+        
+        .btn-book { background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; }
+        .btn-book:hover { background: #4338ca; }
+        
+        .rules { background: white; border-radius: 8px; padding: 24px; }
+        .rule-item { display: flex; align-items: flex-start; gap: 8px; color: #1f2937; margin-bottom: 12px; }
+        .rule-item strong { color: #4f46e5; }
+        
+        /* Room Selection */
+        .select-room-page { padding: 32px 24px; }
+        .back-btn { color: #4f46e5; font-weight: 600; margin-bottom: 32px; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: #4338ca; }
+        
+        .page-title { font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 32px; }
+        
+        .room-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+        .room-card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 2px solid #e5e7eb; transition: all 0.2s; }
+        .room-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-color: #818cf8; }
+        .room-card h3 { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 8px; }
+        .room-card p { color: #4b5563; margin-bottom: 16px; }
+        .room-status { color: #16a34a; font-weight: 600; margin-bottom: 16px; }
+        .btn-choose { width: 100%; background: #4f46e5; color: white; padding: 10px; border-radius: 8px; font-weight: 600; }
+        .btn-choose:hover { background: #4338ca; }
+        
+        /* Date & Time */
+        .datetime-page { padding: 32px 24px; }
+        .datetime-card { background: white; border-radius: 8px; padding: 24px; max-width: 640px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; }
+        .btn-group { display: flex; gap: 16px; margin-top: 32px; }
+        .btn-cancel-booking { flex: 1; background: #d1d5db; color: #1f2937; padding: 12px; border-radius: 8px; font-weight: 600; }
+        .btn-cancel-booking:hover { background: #9ca3af; }
+        .btn-confirm { flex: 1; background: #4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
+        .btn-confirm:hover:not(:disabled) { background: #4338ca; }
+        
+        /* Confirmation */
+        .confirmation-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); }
+        .confirmation-card { background: white; border-radius: 8px; padding: 32px; max-width: 448px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .checkmark { font-size: 48px; margin-bottom: 16px; }
+        .confirmation-card h1 { font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 24px; }
+        .booking-details { background: #f3f4f6; border-radius: 8px; padding: 24px; margin-bottom: 24px; text-align: left; }
+        .booking-details p { color: #1f2937; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-page">
+    <div class="login-card">
+        <h1>Study Room Booking</h1>
+        <p>Honour College Only</p>
+        <div class="form-group">
+            <input type="email" id="emailInput" placeholder="Enter your college email">
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Login</button>
+        <div class="error" id="loginError"></div>
+    </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboardPage" class="hidden">
+    <div class="nav">
+        <div class="nav-content">
+            <h1>Study Rooms</h1>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+    <div class="dashboard-page container">
+        <div class="grid-2">
+            <div>
+                <h2 style="font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">Your Current Booking</h2>
+                <div id="bookingInfo"></div>
+            </div>
+            <div>
+                <h2 style="font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">Booking Rules</h2>
+                <div class="rules">
+                    <div class="rule-item"><strong>Max Duration:</strong> 2 hours</div>
+                    <div class="rule-item"><strong>Active Bookings:</strong> 1 at a time</div>
+                    <div class="rule-item" style="margin-top: 16px; font-size: 12px;">You must cancel your current booking before making a new one.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Select Room -->
+<div id="selectRoomPage" class="hidden">
+    <div class="nav">
+        <div class="nav-content">
+            <button class="back-btn" onclick="goToDashboard()">← Back to Dashboard</button>
+        </div>
+    </div>
+    <div class="select-room-page container">
+        <h2 class="page-title">Select a Study Room</h2>
+        <div class="room-grid" id="roomGrid"></div>
+    </div>
+</div>
+
+<!-- Date & Time -->
+<div id="dateTimePage" class="hidden">
+    <div class="nav">
+        <div class="nav-content">
+            <button class="back-btn" onclick="goToSelectRoom()">← Back</button>
+        </div>
+    </div>
+    <div class="datetime-page container">
+        <div class="datetime-card">
+            <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 24px;">Booking Details</h2>
+            <p style="color: #4b5563; margin-bottom: 24px;"><strong>Selected Room:</strong> <span id="selectedRoomName"></span></p>
+            
+            <div class="form-group">
+                <label>Select Date (Book up to 7 days in advance)</label>
+                <input type="date" id="dateInput">
+            </div>
+            
+            <div class="form-group">
+                <label>Select Time (1 or 2 hour slots)</label>
+                <select id="timeSelect">
+                    <option value="">Choose a time slot</option>
+                </select>
+            </div>
+            
+            <div class="error" id="dateTimeError"></div>
+            
+            <div class="btn-group">
+                <button class="btn-cancel-booking" onclick="goToSelectRoom()">Cancel</button>
+                <button class="btn-confirm" onclick="handleConfirmBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation -->
+<div id="confirmationPage" class="hidden">
+    <div class="confirmation-page">
+        <div class="confirmation-card">
+            <div class="checkmark">✓</div>
+            <h1>Booking Confirmed!</h1>
+            <div class="booking-details">
+                <p><strong>Room:</strong> <span id="confirmRoom"></span></p>
+                <p><strong>Date:</strong> <span id="confirmDate"></span></p>
+                <p><strong>Time:</strong> <span id="confirmTime"></span></p>
+            </div>
+            <button class="btn-book" onclick="goToDashboard()">Back to Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = window.location.hostname === 'localhost'
+      ? 'http://localhost:5000'
+      : 'https://your-app.onrender.com';
+    let currentUser = '';
+    let selectedRoom = null;
+    let activeBooking = null;
+    let minDate = '';
+    let maxDate = '';
+    let bookedSlots = {};
+    
+    const rooms = [
+        { id: 1, name: '910', capacity: '1-8 people' },
+        { id: 2, name: '911', capacity: '1-4 people' },
+        { id: 3, name: '912', capacity: '1-8 people' },
+    ];
+    
+    const timeSlots = ['08:00 - 09:00', '08:00 - 10:00', '09:00 - 10:00', '09:00 - 11:00', '10:00 - 11:00', '10:00 - 12:00', '11:00 - 12:00', '11:00 - 13:00', '12:00 - 13:00', '12:00 - 14:00', '13:00 - 14:00', '13:00 - 15:00', '14:00 - 15:00', '14:00 - 16:00', '15:00 - 16:00', '15:00 - 17:00', '16:00 - 17:00', '16:00 - 18:00', '17:00 - 18:00', '17:00 - 19:00', '18:00 - 19:00', '18:00 - 20:00', '19:00 - 20:00', '20:00 - 21:00'];
+    
+    // Page Navigation
+    function showPage(pageId) {
+        document.querySelectorAll('[id$="Page"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById(pageId).classList.remove('hidden');
+    }
+    
+    function goToDashboard() {
+        fetchUserBooking();
+        showPage('dashboardPage');
+    }
+    
+    function goToSelectRoom() {
+        showPage('selectRoomPage');
+        renderRooms();
+    }
+    
+    // API Calls
+    async function handleLogin() {
+        const email = document.getElementById('emailInput').value;
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = '';
+        
+        if (!email) {
+            errorDiv.textContent = 'Please enter an email';
+            return;
+        }
+        
+        try {
+            const res = await fetch(`${API_URL}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                currentUser = email;
+                fetchDateRange();
+                fetchUserBooking();
+                showPage('dashboardPage');
+            } else {
+                errorDiv.textContent = data.message;
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Connection error. Make sure Flask is running.';
+        }
+    }
+    
+    async function fetchDateRange() {
+        try {
+            const res = await fetch(`${API_URL}/api/date-range`);
+            const data = await res.json();
+            minDate = data.min_date;
+            maxDate = data.max_date;
+            document.getElementById('dateInput').min = minDate;
+            document.getElementById('dateInput').max = maxDate;
+        } catch (err) {
+            console.error('Error fetching date range:', err);
+        }
+    }
+    
+    async function fetchUserBooking() {
+        try {
+            const res = await fetch(`${API_URL}/api/user-booking/${currentUser}`);
+            const booking = await res.json();
+            activeBooking = booking;
+            renderBookingInfo();
+        } catch (err) {
+            console.error('Error fetching user booking:', err);
+        }
+    }
+    
+    async function fetchBookedSlots() {
+        const dateInput = document.getElementById('dateInput').value;
+        if (!dateInput || !selectedRoom) return;
+        
+        try {
+            const res = await fetch(`${API_URL}/api/bookings/${selectedRoom.name}/${dateInput}`);
+            const bookings = await res.json();
+            bookedSlots = {};
+            bookings.forEach(b => {
+                bookedSlots[b.time] = true;
+            });
+            renderTimeSlots();
+        } catch (err) {
+            console.error('Error fetching booked slots:', err);
+        }
+    }
+    
+    async function handleConfirmBooking() {
+        const date = document.getElementById('dateInput').value;
+        const time = document.getElementById('timeSelect').value;
+        const errorDiv = document.getElementById('dateTimeError');
+        errorDiv.textContent = '';
+        
+        if (!date || !time) {
+            errorDiv.textContent = 'Please select date and time';
+            return;
+        }
+        
+        try {
+            const res = await fetch(`${API_URL}/api/book`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: currentUser,
+                    room: selectedRoom.name,
+                    date: date,
+                    time: time
+                })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                activeBooking = data.booking;
+                document.getElementById('confirmRoom').textContent = activeBooking.room;
+                document.getElementById('confirmDate').textContent = activeBooking.date;
+                document.getElementById('confirmTime').textContent = activeBooking.time;
+                showPage('confirmationPage');
+            } else {
+                errorDiv.textContent = data.message;
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Booking failed. Try again.';
+        }
+    }
+    
+    async function handleCancel() {
+        if (!activeBooking) return;
+        
+        try {
+            const res = await fetch(`${API_URL}/api/cancel-booking/${activeBooking.id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) {
+                activeBooking = null;
+                renderBookingInfo();
+            }
+        } catch (err) {
+            console.error('Error canceling booking:', err);
+        }
+    }
+    
+    function handleLogout() {
+        currentUser = '';
+        activeBooking = null;
+        document.getElementById('emailInput').value = '';
+        showPage('loginPage');
+    }
+    
+    // Rendering
+    function renderBookingInfo() {
+        const div = document.getElementById('bookingInfo');
+        if (activeBooking) {
+            div.innerHTML = `
+                <div class="booking-card">
+                    <p><strong>Room:</strong> ${activeBooking.room}</p>
+                    <p><strong>Date:</strong> ${activeBooking.date}</p>
+                    <p><strong>Time:</strong> ${activeBooking.time}</p>
+                    <button class="btn-cancel" onclick="handleCancel()">Cancel Booking</button>
+                </div>
+            `;
+        } else {
+            div.innerHTML = `
+                <div class="empty-booking">
+                    <p>No active bookings</p>
+                    <button class="btn-book" onclick="goToSelectRoom()">Book a Room</button>
+                </div>
+            `;
+        }
+    }
+    
+    function renderRooms() {
+        const grid = document.getElementById('roomGrid');
+        grid.innerHTML = rooms.map(room => `
+            <div class="room-card">
+                <h3>${room.name}</h3>
+                <p>${room.capacity}</p>
+                <p class="room-status">✓ Available</p>
+                <button class="btn-choose" onclick="selectRoom({id: ${room.id}, name: '${room.name}', capacity: '${room.capacity}'})">Choose Room</button>
+            </div>
+        `).join('');
+    }
+    
+    function selectRoom(room) {
+        selectedRoom = room;
+        document.getElementById('selectedRoomName').textContent = room.name;
+        showPage('dateTimePage');
+        document.getElementById('dateInput').value = '';
+        document.getElementById('timeSelect').value = '';
+        document.getElementById('dateTimeError').textContent = '';
+    }
+    
+    function renderTimeSlots() {
+        const select = document.getElementById('timeSelect');
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Choose a time slot</option>' + timeSlots.map(time => `
+            <option value="${time}" ${bookedSlots[time] ? 'disabled' : ''}>
+                ${time} ${bookedSlots[time] ? '(Booked)' : ''}
+            </option>
+        `).join('');
+        select.value = currentValue;
+    }
+    
+    // Event listeners
+    document.getElementById('dateInput').addEventListener('change', fetchBookedSlots);
+    document.getElementById('emailInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+</script>
+
+</body>
+</html>
