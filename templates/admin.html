@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
+        input[type="password"], input[type="email"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #45a049; }
+        .error { color: red; margin-top: 10px; }
+        .success { color: green; margin-top: 10px; }
+        .hidden { display: none; }
+        .login-section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
+        .dashboard-section { display: none; }
+        .student-list { margin-top: 20px; }
+        .student-item { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: #f44336; padding: 5px 10px; font-size: 12px; }
+        .delete-btn:hover { background: #da190b; }
+        #message { padding: 10px; margin-bottom: 20px; border-radius: 4px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Study Room Booking - Admin Dashboard</h1>
+
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection">
+            <h2>Admin Login</h2>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button onclick="adminLogin()">Login</button>
+            <div id="loginMessage"></div>
+        </div>
+
+        <!-- Dashboard Section (Hidden until logged in) -->
+        <div class="dashboard-section" id="dashboardSection">
+            <h2>Manage Approved Emails</h2>
+
+            <!-- Add Student Form -->
+            <div style="background: #e8f5e9; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+                <h3>Add New Student Email</h3>
+                <div class="form-group">
+                    <label for="newEmail">Student Email:</label>
+                    <input type="email" id="newEmail" placeholder="student@bu.edu">
+                </div>
+                <button onclick="addStudent()">Add Student</button>
+                <div id="addMessage"></div>
+            </div>
+
+            <!-- Student List -->
+            <div>
+                <h3>Approved Students</h3>
+                <div class="student-list" id="studentList">
+                    <p>Loading...</p>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button onclick="logout()" style="background: #ff9800; margin-top: 30px;">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let adminPassword = '';
+
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    isLoggedIn = true;
+                    adminPassword = password;
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'block';
+                    loadStudents();
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = 'red';
+                }
+            });
+        }
+
+        function loadStudents() {
+            fetch('/api/admin/students')
+            .then(res => res.json())
+            .then(students => {
+                const listDiv = document.getElementById('studentList');
+                if (students.length === 0) {
+                    listDiv.innerHTML = '<p>No approved students yet.</p>';
+                    return;
+                }
+                listDiv.innerHTML = students.map(student => `
+                    <div class="student-item">
+                        <span>${student.email}</span>
+                        <button class="delete-btn" onclick="deleteStudent(${student.id})">Delete</button>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function addStudent() {
+            const email = document.getElementById('newEmail').value;
+            const messageDiv = document.getElementById('addMessage');
+
+            if (!email) {
+                messageDiv.textContent = 'Please enter an email';
+                messageDiv.style.color = 'red';
+                return;
+            }
+
+            fetch('/api/admin/add-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: adminPassword })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = 'green';
+                    document.getElementById('newEmail').value = '';
+                    loadStudents();
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = 'red';
+                }
+            });
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                fetch(`/api/admin/delete-student/${studentId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: adminPassword })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadStudents();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            adminPassword = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginMessage').textContent = '';
+        }
+    </script>
+</body>
+</html>
