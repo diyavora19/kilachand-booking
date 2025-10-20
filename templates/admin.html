@@ -70,10 +70,7 @@
     </div>
 
     <script>
-        const API_URL = window.location.hostname === 'localhost'
-          ? 'http://localhost:5000'
-          : 'https://your-app.onrender.com';
-        
+        const API_URL = 'http://127.0.0.1:5000';
         let isLoggedIn = false;
         let adminPassword = '';
 
@@ -81,7 +78,7 @@
             const password = document.getElementById('adminPassword').value;
             const messageDiv = document.getElementById('loginMessage');
 
-            fetch('/api/admin/login', {
+            fetch(`${API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })
@@ -102,7 +99,7 @@
         }
 
         function loadStudents() {
-            fetch('/api/admin/students')
+            fetch(`${API_URL}/api/admin/students`)
             .then(res => res.json())
             .then(students => {
                 const listDiv = document.getElementById('studentList');
@@ -129,7 +126,7 @@
                 return;
             }
 
-            fetch('/api/admin/add-student', {
+            fetch(`${API_URL}/api/admin/add-student`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password: adminPassword })
@@ -150,7 +147,7 @@
 
         function deleteStudent(studentId) {
             if (confirm('Are you sure you want to delete this student?')) {
-                fetch(`/api/admin/delete-student/${studentId}`, {
+                fetch(`${API_URL}/api/admin/delete-student/${studentId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: adminPassword })

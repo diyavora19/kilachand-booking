@@ -37,8 +37,8 @@ class Booking(db.Model):
 with app.app_context():
     db.create_all()
     # Load approved emails from text file on startup 
-    if os.path.exists('approved_emails.txt'):
-        with open('approved_emails.txt', 'r') as file:
+    if os.path.exists('emails.txt'):
+        with open('emails.txt', 'r') as file:
             for line in file:
                 email = line.strip()
                 if email and not Student.query.filter_by(email=email).first():
