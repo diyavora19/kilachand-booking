@@ -70,6 +70,10 @@
     </div>
 
     <script>
+        const API_URL = window.location.hostname === 'localhost'
+          ? 'http://localhost:5000'
+          : 'https://your-app.onrender.com';
+        
         let isLoggedIn = false;
         let adminPassword = '';
 
