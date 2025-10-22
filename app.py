@@ -120,7 +120,7 @@ def cancel_booking(booking_id):
 def get_date_range():
     """Get min and max dates for booking (next day to 7 days from now)"""
     today = datetime.now()
-    min_date = (today + timedelta(days=1)).strftime('%Y-%m-%d')
+    min_date = today.strftime('%Y-%m-%d') 
     max_date = (today + timedelta(days=7)).strftime('%Y-%m-%d')
 
     return jsonify({'min_date': min_date, 'max_date': max_date}), 200
@@ -220,4 +220,4 @@ def admin_delete_student_api(student_id):
     return jsonify({'success': True, 'message': f'{student.email} deleted'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
