@@ -220,4 +220,4 @@ def admin_delete_student_api(student_id):
     return jsonify({'success': True, 'message': f'{student.email} deleted'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
