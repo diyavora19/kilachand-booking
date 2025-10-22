@@ -21,7 +21,8 @@
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; color: #374151; font-weight: 600; margin-bottom: 8px; }
         .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
-        .form-group input:focus { outline: none; ring: 2px solid #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-group select { width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; ring: 2px solid #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         .btn-primary { width: 100%; background: #4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
         .btn-primary:hover:not(:disabled) { background: #4338ca; }
         .error { color: #dc2626; font-size: 12px; margin-top: 8px; }
@@ -31,7 +32,7 @@
         .nav { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .nav-content { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
         .nav h1 { font-size: 24px; font-weight: bold; color: #4f46e5; }
-        .btn-logout { display: flex; align-items: center; gap: 8px; color: #4b5563; }
+        .btn-logout { display: flex; align-items: center; gap: 8px; color: #4b5563; background: none; }
         .btn-logout:hover { color: #dc2626; }
         
         .dashboard-page { padding: 32px 24px; }
@@ -56,31 +57,28 @@
         .rule-item { display: flex; align-items: flex-start; gap: 8px; color: #1f2937; margin-bottom: 12px; }
         .rule-item strong { color: #4f46e5; }
         
-        /* Room Selection */
-        .select-room-page { padding: 32px 24px; }
-        .back-btn { color: #4f46e5; font-weight: 600; margin-bottom: 32px; display: flex; align-items: center; gap: 8px; }
+        /* Select Date & Time First */
+        .select-datetime-page { padding: 32px 24px; }
+        .back-btn { color: #4f46e5; font-weight: 600; margin-bottom: 32px; display: flex; align-items: center; gap: 8px; background: none; }
         .back-btn:hover { color: #4338ca; }
         
         .page-title { font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 32px; }
         
+        .datetime-selector { background: white; border-radius: 8px; padding: 32px; max-width: 600px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        /* Available Rooms */
         .room-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
         .room-card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 2px solid #e5e7eb; transition: all 0.2s; }
         .room-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-color: #818cf8; }
+        .room-card.booked { opacity: 0.6; border-color: #ef4444; }
         .room-card h3 { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 8px; }
         .room-card p { color: #4b5563; margin-bottom: 16px; }
-        .room-status { color: #16a34a; font-weight: 600; margin-bottom: 16px; }
+        .room-status { font-weight: 600; margin-bottom: 16px; }
+        .room-status.available { color: #16a34a; }
+        .room-status.booked { color: #ef4444; }
         .btn-choose { width: 100%; background: #4f46e5; color: white; padding: 10px; border-radius: 8px; font-weight: 600; }
         .btn-choose:hover { background: #4338ca; }
-        
-        /* Date & Time */
-        .datetime-page { padding: 32px 24px; }
-        .datetime-card { background: white; border-radius: 8px; padding: 24px; max-width: 640px; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; }
-        .btn-group { display: flex; gap: 16px; margin-top: 32px; }
-        .btn-cancel-booking { flex: 1; background: #d1d5db; color: #1f2937; padding: 12px; border-radius: 8px; font-weight: 600; }
-        .btn-cancel-booking:hover { background: #9ca3af; }
-        .btn-confirm { flex: 1; background: #4f46e5; color: white; padding: 12px; border-radius: 8px; font-weight: 600; }
-        .btn-confirm:hover:not(:disabled) { background: #4338ca; }
+        .btn-choose:disabled { background: #9ca3af; cursor: not-allowed; }
         
         /* Confirmation */
         .confirmation-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); }
@@ -132,31 +130,16 @@
     </div>
 </div>
 
-<!-- Select Room -->
-<div id="selectRoomPage" class="hidden">
+<!-- Select Date & Time -->
+<div id="selectDateTimePage" class="hidden">
     <div class="nav">
         <div class="nav-content">
             <button class="back-btn" onclick="goToDashboard()">← Back to Dashboard</button>
         </div>
     </div>
-    <div class="select-room-page container">
-        <h2 class="page-title">Select a Study Room</h2>
-        <div class="room-grid" id="roomGrid"></div>
-    </div>
-</div>
-
-<!-- Date & Time -->
-<div id="dateTimePage" class="hidden">
-    <div class="nav">
-        <div class="nav-content">
-            <button class="back-btn" onclick="goToSelectRoom()">← Back</button>
-        </div>
-    </div>
-    <div class="datetime-page container">
-        <div class="datetime-card">
-            <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 24px;">Booking Details</h2>
-            <p style="color: #4b5563; margin-bottom: 24px;"><strong>Selected Room:</strong> <span id="selectedRoomName"></span></p>
-            
+    <div class="select-datetime-page container">
+        <h2 class="page-title">Select Date & Time</h2>
+        <div class="datetime-selector">
             <div class="form-group">
                 <label>Select Date (Book up to 7 days in advance)</label>
                 <input type="date" id="dateInput">
@@ -171,11 +154,22 @@
             
             <div class="error" id="dateTimeError"></div>
             
-            <div class="btn-group">
-                <button class="btn-cancel-booking" onclick="goToSelectRoom()">Cancel</button>
-                <button class="btn-confirm" onclick="handleConfirmBooking()">Confirm Booking</button>
-            </div>
+            <button class="btn-primary" onclick="findAvailableRooms()" style="margin-top: 24px;">Find Available Rooms</button>
         </div>
+    </div>
+</div>
+
+<!-- Available Rooms -->
+<div id="availableRoomsPage" class="hidden">
+    <div class="nav">
+        <div class="nav-content">
+            <button class="back-btn" onclick="goToSelectDateTime()">← Back</button>
+        </div>
+    </div>
+    <div class="select-datetime-page container">
+        <h2 class="page-title">Available Rooms</h2>
+        <p style="color: #4b5563; margin-bottom: 32px;"><strong>Selected:</strong> <span id="selectedDateTime"></span></p>
+        <div class="room-grid" id="roomGrid"></div>
     </div>
 </div>
 
@@ -196,15 +190,16 @@
 </div>
 
 <script>
-    const API_URL =window.location.origin;
+    const API_URL = window.location.origin;
     let currentUser = '';
-    let selectedRoom = null;
+    let selectedDate = '';
+    let selectedTime = '';
     let activeBooking = null;
     let minDate = '';
     let maxDate = '';
-    let bookedSlots = {};
+    let availableRooms = [];
     
-    const rooms = [
+    const allRooms = [
         { id: 1, name: '910', capacity: '1-8 people' },
         { id: 2, name: '911', capacity: '1-4 people' },
         { id: 3, name: '912', capacity: '1-8 people' },
@@ -223,9 +218,9 @@
         showPage('dashboardPage');
     }
     
-    function goToSelectRoom() {
-        showPage('selectRoomPage');
-        renderRooms();
+    function goToSelectDateTime() {
+        showPage('selectDateTimePage');
+        renderTimeSlots();
     }
     
     // API Calls
@@ -284,43 +279,43 @@
         }
     }
     
-    async function fetchBookedSlots() {
-        const dateInput = document.getElementById('dateInput').value;
-        if (!dateInput || !selectedRoom) return;
-        
-        try {
-            const res = await fetch(`${API_URL}/api/bookings/${selectedRoom.name}/${dateInput}`);
-            const bookings = await res.json();
-            bookedSlots = {};
-            bookings.forEach(b => {
-                bookedSlots[b.time] = true;
-            });
-            renderTimeSlots();
-        } catch (err) {
-            console.error('Error fetching booked slots:', err);
-        }
-    }
-    
-    async function handleConfirmBooking() {
+    async function findAvailableRooms() {
         const date = document.getElementById('dateInput').value;
         const time = document.getElementById('timeSelect').value;
         const errorDiv = document.getElementById('dateTimeError');
         errorDiv.textContent = '';
         
         if (!date || !time) {
-            errorDiv.textContent = 'Please select date and time';
+            errorDiv.textContent = 'Please select both date and time';
             return;
         }
         
+        selectedDate = date;
+        selectedTime = time;
+        
+        try {
+            const res = await fetch(`${API_URL}/api/available-rooms/${date}/${encodeURIComponent(time)}`);
+            const data = await res.json();
+            availableRooms = data.rooms;
+            
+            document.getElementById('selectedDateTime').textContent = `${date} at ${time}`;
+            renderAvailableRooms();
+            showPage('availableRoomsPage');
+        } catch (err) {
+            errorDiv.textContent = 'Error checking availability. Try again.';
+        }
+    }
+    
+    async function bookRoom(roomName) {
         try {
             const res = await fetch(`${API_URL}/api/book`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: currentUser,
-                    room: selectedRoom.name,
-                    date: date,
-                    time: time
+                    room: roomName,
+                    date: selectedDate,
+                    time: selectedTime
                 })
             });
             const data = await res.json();
@@ -332,10 +327,10 @@
                 document.getElementById('confirmTime').textContent = activeBooking.time;
                 showPage('confirmationPage');
             } else {
-                errorDiv.textContent = data.message;
+                alert(data.message);
             }
         } catch (err) {
-            errorDiv.textContent = 'Booking failed. Try again.';
+            alert('Booking failed. Try again.');
         }
     }
     
@@ -379,46 +374,36 @@
             div.innerHTML = `
                 <div class="empty-booking">
                     <p>No active bookings</p>
-                    <button class="btn-book" onclick="goToSelectRoom()">Book a Room</button>
+                    <button class="btn-book" onclick="goToSelectDateTime()">Book a Room</button>
                 </div>
             `;
         }
     }
     
-    function renderRooms() {
+    function renderTimeSlots() {
+        const select = document.getElementById('timeSelect');
+        select.innerHTML = '<option value="">Choose a time slot</option>' + timeSlots.map(time => `
+            <option value="${time}">${time}</option>
+        `).join('');
+    }
+    
+    function renderAvailableRooms() {
         const grid = document.getElementById('roomGrid');
-        grid.innerHTML = rooms.map(room => `
-            <div class="room-card">
+        grid.innerHTML = availableRooms.map(room => `
+            <div class="room-card ${room.available ? '' : 'booked'}">
                 <h3>${room.name}</h3>
                 <p>${room.capacity}</p>
-                <p class="room-status">✓ Available</p>
-                <button class="btn-choose" onclick="selectRoom({id: ${room.id}, name: '${room.name}', capacity: '${room.capacity}'})">Choose Room</button>
+                <p class="room-status ${room.available ? 'available' : 'booked'}">
+                    ${room.available ? '✓ Available' : '✗ Booked'}
+                </p>
+                <button class="btn-choose" onclick="bookRoom('${room.name}')" ${!room.available ? 'disabled' : ''}>
+                    ${room.available ? 'Book This Room' : 'Not Available'}
+                </button>
             </div>
         `).join('');
     }
     
-    function selectRoom(room) {
-        selectedRoom = room;
-        document.getElementById('selectedRoomName').textContent = room.name;
-        showPage('dateTimePage');
-        document.getElementById('dateInput').value = '';
-        document.getElementById('timeSelect').value = '';
-        document.getElementById('dateTimeError').textContent = '';
-    }
-    
-    function renderTimeSlots() {
-        const select = document.getElementById('timeSelect');
-        const currentValue = select.value;
-        select.innerHTML = '<option value="">Choose a time slot</option>' + timeSlots.map(time => `
-            <option value="${time}" ${bookedSlots[time] ? 'disabled' : ''}>
-                ${time} ${bookedSlots[time] ? '(Booked)' : ''}
-            </option>
-        `).join('');
-        select.value = currentValue;
-    }
-    
     // Event listeners
-    document.getElementById('dateInput').addEventListener('change', fetchBookedSlots);
     document.getElementById('emailInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleLogin();
     });

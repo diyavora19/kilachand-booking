@@ -37,8 +37,8 @@ class Booking(db.Model):
 with app.app_context():
     db.create_all()
     # Load approved emails from text file on startup 
-    if os.path.exists('emails.txt'):
-        with open('emails.txt', 'r') as file:
+    if os.path.exists('approved_emails.txt'):
+        with open('approved_emails.txt', 'r') as file:
             for line in file:
                 email = line.strip()
                 if email and not Student.query.filter_by(email=email).first():
@@ -125,6 +125,30 @@ def get_date_range():
 
     return jsonify({'min_date': min_date, 'max_date': max_date}), 200
 
+@app.route('/api/available-rooms/<date>/<time>', methods=['GET'])
+def get_available_rooms(date, time):
+    """Get all rooms and their availability for a specific date and time"""
+    # Get all bookings for this date and time
+    bookings = Booking.query.filter_by(date=date, time=time).all()
+    booked_room_names = [booking.room for booking in bookings]
+    
+    # Check availability for each room
+    rooms = [
+        {'name': '910', 'capacity': '1-8 people'},
+        {'name': '911', 'capacity': '1-4 people'},
+        {'name': '912', 'capacity': '1-8 people'},
+    ]
+    
+    available_rooms = []
+    for room in rooms:
+        available_rooms.append({
+            'name': room['name'],
+            'capacity': room['capacity'],
+            'available': room['name'] not in booked_room_names
+        })
+    
+    return jsonify({'rooms': available_rooms}), 200
+
 # Admin password 
 ADMIN_PASSWORD = 'diyavora19'
 
@@ -196,4 +220,4 @@ def admin_delete_student_api(student_id):
     return jsonify({'success': True, 'message': f'{student.email} deleted'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
