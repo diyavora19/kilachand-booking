@@ -92,10 +92,36 @@ def book_room():
     if existing_booking:
         return jsonify({'success': False, 'message': 'You already have an active booking'}), 400
 
-    # Check if slot is already booked 
-    slot_booked = Booking.query.filter_by(room=room, date=date, time=time).first()
-    if slot_booked:
-        return jsonify({'success': False, 'message': 'This slot is already booked'}), 400
+    # Helper function to parse time
+    def parse_time(time_str):
+        parts = time_str.strip().split()
+        hour = int(parts[0].split(':')[0])
+        minute = int(parts[0].split(':')[1]) if ':' in parts[0] else 0
+        am_pm = parts[1] if len(parts) > 1 else ''
+        
+        if am_pm == 'PM' and hour != 12:
+            hour += 12
+        elif am_pm == 'AM' and hour == 12:
+            hour = 0
+            
+        return hour * 60 + minute
+    
+    def times_overlap(slot1, slot2):
+        s1_parts = slot1.split(' - ')
+        s1_start = parse_time(s1_parts[0])
+        s1_end = parse_time(s1_parts[1])
+        
+        s2_parts = slot2.split(' - ')
+        s2_start = parse_time(s2_parts[0])
+        s2_end = parse_time(s2_parts[1])
+        
+        return s1_start < s2_end and s2_start < s1_end
+
+    # Check if slot conflicts with existing bookings for this room
+    all_bookings = Booking.query.filter_by(room=room, date=date).all()
+    for booking in all_bookings:
+        if times_overlap(time, booking.time):
+            return jsonify({'success': False, 'message': 'This time slot conflicts with an existing booking'}), 400
     
     # Create booking 
     new_booking = Booking(email=email, room=room, date=date, time=time)
@@ -120,7 +146,7 @@ def cancel_booking(booking_id):
 def get_date_range():
     """Get min and max dates for booking (next day to 7 days from now)"""
     today = datetime.now()
-    min_date = today.strftime('%Y-%m-%d') 
+    min_date = (today + timedelta(days=1)).strftime('%Y-%m-%d')
     max_date = (today + timedelta(days=7)).strftime('%Y-%m-%d')
 
     return jsonify({'min_date': min_date, 'max_date': max_date}), 200
@@ -128,23 +154,62 @@ def get_date_range():
 @app.route('/api/available-rooms/<date>/<time>', methods=['GET'])
 def get_available_rooms(date, time):
     """Get all rooms and their availability for a specific date and time"""
-    # Get all bookings for this date and time
-    bookings = Booking.query.filter_by(date=date, time=time).all()
-    booked_room_names = [booking.room for booking in bookings]
     
-    # Check availability for each room
+    # Parse the requested time slot
+    def parse_time(time_str):
+        """Convert time string to minutes since midnight"""
+        parts = time_str.strip().split()
+        hour = int(parts[0].split(':')[0])
+        minute = int(parts[0].split(':')[1]) if ':' in parts[0] else 0
+        am_pm = parts[1] if len(parts) > 1 else ''
+        
+        if am_pm == 'PM' and hour != 12:
+            hour += 12
+        elif am_pm == 'AM' and hour == 12:
+            hour = 0
+            
+        return hour * 60 + minute
+    
+    def times_overlap(slot1, slot2):
+        """Check if two time slots overlap"""
+        # Parse slot1 (requested slot)
+        s1_parts = slot1.split(' - ')
+        s1_start = parse_time(s1_parts[0])
+        s1_end = parse_time(s1_parts[1])
+        
+        # Parse slot2 (booked slot)
+        s2_parts = slot2.split(' - ')
+        s2_start = parse_time(s2_parts[0])
+        s2_end = parse_time(s2_parts[1])
+        
+        # Check overlap: slots overlap if one starts before the other ends
+        # Use <= to allow exact touching times (e.g., 9-10 and 10-12 don't overlap)
+        return s1_start < s2_end and s2_start < s1_end
+    
+    # Get all bookings for this date
+    all_bookings = Booking.query.filter_by(date=date).all()
+    
+    # Room definitions
     rooms = [
         {'name': '910', 'capacity': '1-8 people'},
         {'name': '911', 'capacity': '1-4 people'},
         {'name': '912', 'capacity': '1-8 people'},
     ]
     
+    # Check availability for each room
     available_rooms = []
     for room in rooms:
+        is_available = True
+        # Check if any booking for this room conflicts with requested time
+        for booking in all_bookings:
+            if booking.room == room['name'] and times_overlap(time, booking.time):
+                is_available = False
+                break
+        
         available_rooms.append({
             'name': room['name'],
             'capacity': room['capacity'],
-            'available': room['name'] not in booked_room_names
+            'available': is_available
         })
     
     return jsonify({'rooms': available_rooms}), 200
