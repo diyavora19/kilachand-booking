@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('postgresql://study_roob_db_user:zrv9ySqqiGcKSEqnUGpRHuy0HeulgiX9@dpg-d3t8tt6uk2gs73d39vb0-a/study_roob_db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bookings.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 db = SQLAlchemy(app)
 
